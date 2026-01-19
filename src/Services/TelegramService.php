@@ -473,7 +473,7 @@ class TelegramService
                 Log::info("Successfully deleted message {$messageId} from chat {$chatId}");
             } else {
                 $result['error'] = $responseData['description'] ?? 'Unknown error';
-                Log::warning("Failed to delete message {$messageId} from chat {$chatId}: " . ($result['error'] ?? 'Unknown error'));
+                Log::warning("Failed to delete message {$messageId} from chat {$chatId}: " . $result['error']);
             }
         } catch (Exception $e) {
             $result['error'] = $e->getMessage();

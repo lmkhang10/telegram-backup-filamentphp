@@ -2,10 +2,10 @@
 
 namespace FieldTechVN\TelegramBackup\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use FieldTechVN\TelegramBackup\Http\Requests\DownloadTelegramBackupRequest;
 use FieldTechVN\TelegramBackup\Models\TelegramBackup;
 use FieldTechVN\TelegramBackup\Services\TelegramBackupDownloadService;
+use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TelegramBackupController extends Controller

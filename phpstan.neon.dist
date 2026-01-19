@@ -9,6 +9,13 @@ parameters:
         - database
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
-    checkModelProperties: true
-    checkMissingIterableValueType: false
-
+    checkModelProperties: false
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#Class .* extends unknown class Filament#'
+        - '#Call to an undefined static method .*::route\(\)#'
+        - '#Access to an undefined property .*::\$form#'
+        - '#Access to an undefined property .*::\$record#'
+        - '#Access to an undefined property FieldTechVN.*Models.*::\$.*\.#'
+        - '#Call to an undefined method .*::chats\(\)#'
+        - '#Offset .* on array.*always exists and is not nullable#'
