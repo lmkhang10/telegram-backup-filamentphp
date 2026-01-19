@@ -85,7 +85,7 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
 
         // Handle Stubs
         if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
+            foreach (app(Filesystem::class)->files(__DIR__ . '/stubs/') as $file) {
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/telegram-backup-filamentphp/{$file->getFilename()}"),
                 ], 'telegram-backup-filamentphp-stubs');
@@ -199,9 +199,9 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            // AlpineComponent::make('telegram-backup-filamentphp', __DIR__ . '/../resources/dist/components/telegram-backup-filamentphp.js'),
-            Css::make('telegram-backup-filamentphp-styles', __DIR__ . '/../resources/dist/telegram-backup-filamentphp.css'),
-            Js::make('telegram-backup-filamentphp-scripts', __DIR__ . '/../resources/dist/telegram-backup-filamentphp.js'),
+            // AlpineComponent::make('telegram-backup-filamentphp', __DIR__ . '/resources/dist/components/telegram-backup-filamentphp.js'),
+            Css::make('telegram-backup-filamentphp-styles', __DIR__ . '/resources/dist/telegram-backup-filamentphp.css'),
+            Js::make('telegram-backup-filamentphp-scripts', __DIR__ . '/resources/dist/telegram-backup-filamentphp.js'),
         ];
     }
 
