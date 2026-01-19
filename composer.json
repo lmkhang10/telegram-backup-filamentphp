@@ -52,7 +52,10 @@
         }
     },
     "scripts": {
-        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php -r \"if (file_exists('vendor/bin/testbench')) { @exec('php ./vendor/bin/testbench package:discover --ansi 2>/dev/null', \$output, \$code); exit(0); }\""
+        ],
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
