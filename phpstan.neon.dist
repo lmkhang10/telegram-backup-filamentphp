@@ -11,20 +11,10 @@ parameters:
     checkOctaneCompatibility: true
     checkModelProperties: false
     checkMissingIterableValueType: false
-    
-    # Ignore errors for Filament classes (external dependency)
     ignoreErrors:
-        # Filament Resource classes
         - '#Class .* extends unknown class Filament\\\\.*#'
         - '#Call to an undefined static method .*::route\(\)#'
-        
-        # Filament page properties (inherited from parent classes)
         - '#Access to an undefined property .*::\$form#'
         - '#Access to an undefined property .*::\$record#'
-        
-        # Eloquent model properties (dynamic properties)
         - '#Access to an undefined property FieldTechVN\\\\TelegramBackup\\\\Models\\\\.*::\$.*#'
-        
-        # Array offset error (already handled in code)
         - '#Offset \'error\' on array.*always exists and is not nullable#'
-
