@@ -7,7 +7,7 @@
 
 
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+A Laravel package that integrates Telegram backup functionality with FilamentPHP 3+. This package provides Filament resources for managing Telegram bots, chats, and backups, allowing you to automatically send Laravel backups to Telegram.
 
 ## Installation
 
@@ -36,19 +36,69 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="telegram-backup-filamentphp-views"
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 ## Usage
 
+### Register Resources in Your Filament Panel
+
+In your Filament panel provider (e.g., `app/Providers/Filament/AdminPanelProvider.php`), add the Telegram resources:
+
 ```php
-$telegramBackup = new FieldTechVN\TelegramBackup();
-echo $telegramBackup->echoPhrase('Hello, FieldTechVN!');
+use FieldTechVN\TelegramBackup\Filament\Resources\TelegramBotResource;
+use FieldTechVN\TelegramBackup\Filament\Resources\TelegramChatResource;
+use FieldTechVN\TelegramBackup\Filament\Resources\TelegramBackupResource;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ... other configuration
+        ->resources([
+            TelegramBotResource::class,
+            TelegramChatResource::class,
+            TelegramBackupResource::class,
+        ])
+        ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+            return $builder
+                ->items([
+                    // ... your other navigation items
+                ])
+                ->groups([
+                    // Telegram group
+                    NavigationGroup::make('TelegramGroup')
+                        ->label(__('admin.nav.telegram.group'))
+                        ->items([
+                            NavigationItem::make('TelegramBotResource')
+                                ->label(TelegramBotResource::getNavigationLabel())
+                                ->icon(TelegramBotResource::getNavigationIcon())
+                                ->url(fn(): string => TelegramBotResource::getUrl())
+                                ->sort(1),
+
+                            NavigationItem::make('TelegramChatResource')
+                                ->label(TelegramChatResource::getNavigationLabel())
+                                ->icon(TelegramChatResource::getNavigationIcon())
+                                ->url(fn(): string => TelegramChatResource::getUrl())
+                                ->sort(2),
+
+                            NavigationItem::make('TelegramBackupResource')
+                                ->label(TelegramBackupResource::getNavigationLabel())
+                                ->icon(TelegramBackupResource::getNavigationIcon())
+                                ->url(fn(): string => TelegramBackupResource::getUrl())
+                                ->sort(3),
+                        ]),
+                ]);
+        });
+}
 ```
+
+### Features
+
+- **Telegram Bot Management**: Create and manage Telegram bots for sending backups
+- **Chat Management**: Manage Telegram chats/channels where backups are sent
+- **Backup Tracking**: View and manage backups sent to Telegram
+- **Automatic Backup Sending**: Integrates with Spatie Laravel Backup to automatically send backups to Telegram
+- **Large File Splitting**: Automatically splits large backup files to comply with Telegram's file size limits
 
 ## Testing
 
