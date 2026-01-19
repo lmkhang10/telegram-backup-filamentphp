@@ -7,7 +7,7 @@
 
 
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+A Laravel package that integrates Telegram backup functionality with FilamentPHP 3+. This package provides Filament resources for managing Telegram bots, chats, and backups, allowing you to automatically send Laravel backups to Telegram.
 
 ## Installation
 
@@ -36,94 +36,69 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="telegram-backup-filamentphp-views"
 ```
 
-This is the contents of the published config file:
+## Usage
+
+### Register Resources in Your Filament Panel
+
+In your Filament panel provider (e.g., `app/Providers/Filament/AdminPanelProvider.php`), add the Telegram resources:
 
 ```php
-return [
-    /*
-    |--------------------------------------------------------------------------
-    | Telegram Bot API Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Default settings for Telegram Bot API interactions
-    |
-    */
+use FieldTechVN\TelegramBackup\Filament\Resources\TelegramBotResource;
+use FieldTechVN\TelegramBackup\Filament\Resources\TelegramChatResource;
+use FieldTechVN\TelegramBackup\Filament\Resources\TelegramBackupResource;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 
-    'api' => [
-        'base_url' => 'https://api.telegram.org/bot',
-        'timeout' => 30,
-    ],
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ... other configuration
+        ->resources([
+            TelegramBotResource::class,
+            TelegramChatResource::class,
+            TelegramBackupResource::class,
+        ])
+        ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+            return $builder
+                ->items([
+                    // ... your other navigation items
+                ])
+                ->groups([
+                    // Telegram group
+                    NavigationGroup::make('TelegramGroup')
+                        ->label(__('admin.nav.telegram.group'))
+                        ->items([
+                            NavigationItem::make('TelegramBotResource')
+                                ->label(TelegramBotResource::getNavigationLabel())
+                                ->icon(TelegramBotResource::getNavigationIcon())
+                                ->url(fn(): string => TelegramBotResource::getUrl())
+                                ->sort(1),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Default Bot Settings
-    |--------------------------------------------------------------------------
-    |
-    | Default configuration for new bots
-    |
-    */
+                            NavigationItem::make('TelegramChatResource')
+                                ->label(TelegramChatResource::getNavigationLabel())
+                                ->icon(TelegramChatResource::getNavigationIcon())
+                                ->url(fn(): string => TelegramChatResource::getUrl())
+                                ->sort(2),
 
-    'default_bot' => [
-        'is_active' => false,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Webhook Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Default webhook settings
-    |
-    */
-
-    'webhook' => [
-        'default_events' => [
-            'message',
-            'edited_message',
-            'channel_post',
-            'edited_channel_post',
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Message Templates
-    |--------------------------------------------------------------------------
-    |
-    | Templates for different types of messages
-    |
-    */
-
-    'templates' => [
-        'backup_success' => '✅ Backup completed successfully!',
-        'backup_failed' => '❌ Backup failed!',
-        'test_message' => '🧪 Test message from Telegram Backup',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Backup Integration
-    |--------------------------------------------------------------------------
-    |
-    | Settings for integration with Spatie Laravel Backup
-    | Cloned from raziul/laravel-backup-telegram package
-    |
-    */
-
-    'backup' => [
-        'enabled' => env('TELEGRAM_BACKUP_ENABLED', false),
-        'notify_on_success' => true,
-        'notify_on_failure' => true,
-
-        // Original package config (for backward compatibility)
-        // Database has highest priority, falls back to env variables if no bot in database
-        'token' => \FieldTechVN\TelegramBackup\Helpers\ConfigHelper::getDefaultBotToken() ?: env('BACKUP_TELEGRAM_BOT_TOKEN'),
-        'chat_id' => \FieldTechVN\TelegramBackup\Helpers\ConfigHelper::getDefaultChatId() ?: env('BACKUP_TELEGRAM_CHAT_ID'),
-        'chunk_size' => env('BACKUP_TELEGRAM_CHUNK_SIZE', 1), // in megabytes (max 49 MB)
-    ],
-];
-
+                            NavigationItem::make('TelegramBackupResource')
+                                ->label(TelegramBackupResource::getNavigationLabel())
+                                ->icon(TelegramBackupResource::getNavigationIcon())
+                                ->url(fn(): string => TelegramBackupResource::getUrl())
+                                ->sort(3),
+                        ]),
+                ]);
+        });
+}
 ```
+
+### Features
+
+- **Telegram Bot Management**: Create and manage Telegram bots for sending backups
+- **Chat Management**: Manage Telegram chats/channels where backups are sent
+- **Backup Tracking**: View and manage backups sent to Telegram
+- **Automatic Backup Sending**: Integrates with Spatie Laravel Backup to automatically send backups to Telegram
+- **Large File Splitting**: Automatically splits large backup files to comply with Telegram's file size limits
 
 ## Testing
 
