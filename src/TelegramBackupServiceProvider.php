@@ -6,7 +6,6 @@ use FieldTechVN\TelegramBackup\Commands\TelegramBackupCommand;
 use FieldTechVN\TelegramBackup\Services\SendBackupFile;
 use FieldTechVN\TelegramBackup\Services\TelegramBackupService;
 use FieldTechVN\TelegramBackup\Testing\TestsTelegramBackup;
-use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;

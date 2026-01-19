@@ -150,7 +150,7 @@ class TelegramBackupService
 
                 if ($chats->isEmpty()) {
                     // Fallback to config chat_id if no chats configured
-                    $chatId = config('telegram-backup-filamentphp.backup.chat_id') ?? env('BACKUP_TELEGRAM_CHAT_ID');
+                    $chatId = config('telegram-backup-filamentphp.backup.chat_id');
 
                     if (empty($chatId)) {
                         Log::warning("No active chats configured for bot {$bot->bot_username} and no chat ID in config.");

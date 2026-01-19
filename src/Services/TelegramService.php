@@ -67,7 +67,7 @@ class TelegramService
 
                 // If no chats found from updates, try to get chat from config as fallback
                 if (empty($chats)) {
-                    $configChatId = config('telegram-backup-filamentphp.backup.chat_id') ?? env('BACKUP_TELEGRAM_CHAT_ID');
+                    $configChatId = config('telegram-backup-filamentphp.backup.chat_id');
                     if ($configChatId) {
                         try {
                             $chatInfo = $this->getChatInfo($bot->bot_token, $configChatId);
