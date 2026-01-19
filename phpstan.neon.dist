@@ -10,6 +10,7 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: false
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - '#Class .* extends unknown class Filament#'
         - '#Call to an undefined static method .*::route\(\)#'
