@@ -119,7 +119,7 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
      */
     protected function registerRoutes(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/Routes/web.php');
     }
 
     /**
