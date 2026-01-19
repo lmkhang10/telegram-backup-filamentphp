@@ -30,12 +30,6 @@ You can publish the config file with:
 php artisan vendor:publish --tag="telegram-backup-filamentphp-config"
 ```
 
-Optionally, you can publish the views using:
-
-```bash
-php artisan vendor:publish --tag="telegram-backup-filamentphp-views"
-```
-
 ### Environment Variables
 
 Add the following environment variables to your `.env` file:
@@ -44,20 +38,12 @@ Add the following environment variables to your `.env` file:
 # Enable/disable automatic backup notifications to Telegram
 TELEGRAM_BACKUP_ENABLED=true
 
-# Telegram Bot Token (optional - can be set via Filament admin panel)
-# Falls back to database if not set here
-BACKUP_TELEGRAM_BOT_TOKEN=your_bot_token_here
-
-# Telegram Chat ID (optional - can be set via Filament admin panel)
-# Falls back to database if not set here
-BACKUP_TELEGRAM_CHAT_ID=your_chat_id_here
-
 # Chunk size for splitting large backup files (in MB, max 49)
 # Default: 1 MB
 BACKUP_TELEGRAM_CHUNK_SIZE=1
 ```
 
-**Note:** The package prioritizes bot tokens and chat IDs from the database (configured via Filament admin panel) over environment variables. Environment variables are used as fallbacks if no active bot/chat is found in the database.
+**Important:** You must configure Telegram bots and chats via the Filament admin panel. The package uses the database configuration exclusively - there are no environment variable fallbacks for bot tokens or chat IDs.
 
 ## Usage
 
@@ -114,6 +100,47 @@ public function panel(Panel $panel): Panel
         });
 }
 ```
+
+### How to Add a Chat ID
+
+To configure a Telegram group or channel for storing backups, follow these steps:
+
+1. **Add Bot Token First**
+   - Go to the Telegram Bots list page in your Filament admin panel
+   - Create a new bot or edit an existing one
+   - Add your Telegram bot token (obtained from [@BotFather](https://t.me/botfather) on Telegram)
+   - Save the bot
+
+2. **Add Bot to Group/Channel**
+   - In Telegram, add the bot to the group or channel you want to use for cloud storage
+   - Set the bot as an **Administrator** with the following permissions:
+     - ✅ **Manage Messages** - Enable this (required)
+     - ❌ **Change Channel Info** - Disable
+     - ❌ **Manage Stories** - Disable
+     - ❌ **Manage Direct Messages** - Disable
+     - ❌ **Add Subscribers** - Disable
+     - ❌ **Manage Video Chats** - Disable
+     - ❌ **Add New Admins** - Disable
+   
+   > **Note:** Only "Manage Messages" permission is required. All other permissions should be disabled for security.
+
+3. **Start Long Polling**
+   - Go back to the Telegram Bots list page in Filament
+   - Find your bot and click the "Start Long Polling" button
+   - This will enable the bot to listen for messages and commands
+
+4. **Run Setup Command**
+   - In Telegram, go to the group/channel where you added the bot
+   - Type the command: `/setup`
+   - The bot will automatically:
+     - Detect the chat information
+     - Create or update the chat in the database
+     - Link the chat to your bot
+     - Send a confirmation message
+
+5. **Done!**
+   - The chat is now configured and ready to receive backups
+   - You can verify the chat was added by checking the Telegram Chats list in Filament
 
 ### Features
 

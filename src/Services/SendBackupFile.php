@@ -118,7 +118,7 @@ final class SendBackupFile
 
             if ($chats->isEmpty()) {
                 // Fallback to config chat_id if no chats configured for this bot
-                $chatId = config('telegram-backup-filamentphp.backup.chat_id') ?? env('BACKUP_TELEGRAM_CHAT_ID');
+                $chatId = config('telegram-backup-filamentphp.backup.chat_id');
 
                 if (! empty($chatId)) {
                     $result = $this->sendFileDirectly($bot->bot_token, $chatId, $filePath, $backupName, $fileSize, $bot->id);
@@ -248,7 +248,7 @@ final class SendBackupFile
         if ($bots->isEmpty()) {
             // Fallback to config if no active bots in database
             $token = config('telegram-backup-filamentphp.backup.token') ?? config('backup-telegram.token');
-            $chatId = config('telegram-backup-filamentphp.backup.chat_id') ?? env('BACKUP_TELEGRAM_CHAT_ID');
+            $chatId = config('telegram-backup-filamentphp.backup.chat_id');
 
             if (empty($token) || empty($chatId)) {
                 consoleOutput()->error('Telegram token or chat ID is not configured.');
@@ -292,7 +292,7 @@ final class SendBackupFile
 
             if (empty($chatIds)) {
                 // Fallback to config chat_id if no chats configured for this bot
-                $configChatId = config('telegram-backup-filamentphp.backup.chat_id') ?? env('BACKUP_TELEGRAM_CHAT_ID');
+                $configChatId = config('telegram-backup-filamentphp.backup.chat_id');
                 if (! empty($configChatId)) {
                     $chatIds = [$configChatId];
                 }

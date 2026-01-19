@@ -76,10 +76,9 @@ return [
         'notify_on_success' => true,
         'notify_on_failure' => true,
 
-        // Original package config (for backward compatibility)
-        // Database has highest priority, falls back to env variables if no bot in database
-        'token' => \FieldTechVN\TelegramBackup\Helpers\ConfigHelper::getDefaultBotToken() ?: env('BACKUP_TELEGRAM_BOT_TOKEN'),
-        'chat_id' => \FieldTechVN\TelegramBackup\Helpers\ConfigHelper::getDefaultChatId() ?: env('BACKUP_TELEGRAM_CHAT_ID'),
+        // Database has highest priority - bots and chats must be configured via Filament admin panel
+        'token' => \FieldTechVN\TelegramBackup\Helpers\ConfigHelper::getDefaultBotToken(),
+        'chat_id' => \FieldTechVN\TelegramBackup\Helpers\ConfigHelper::getDefaultChatId(),
         'chunk_size' => env('BACKUP_TELEGRAM_CHUNK_SIZE', 1), // in megabytes (max 49 MB)
     ],
 ];

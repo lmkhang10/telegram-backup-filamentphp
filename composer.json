@@ -1,5 +1,6 @@
 {
     "name": "lmkhang10/telegram-backup-filamentphp",
+    "version": "1.0.5",
     "description": "Telegram Backup with FilamentPHP",
     "keywords": [
         "lmkhang10",
