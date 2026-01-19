@@ -54,7 +54,7 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php -r \"if (file_exists('vendor/bin/testbench')) { @exec('php ./vendor/bin/testbench package:discover --ansi 2>/dev/null', $output, $code); exit(0); }\""
+            "@php -r \"if (file_exists('vendor/bin/testbench')) { @passthru('php ./vendor/bin/testbench package:discover --ansi 2>/dev/null'); }\""
         ],
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
