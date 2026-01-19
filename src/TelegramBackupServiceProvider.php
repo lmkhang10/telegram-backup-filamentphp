@@ -2,6 +2,10 @@
 
 namespace FieldTechVN\TelegramBackup;
 
+use FieldTechVN\TelegramBackup\Commands\TelegramBackupCommand;
+use FieldTechVN\TelegramBackup\Services\SendBackupFile;
+use FieldTechVN\TelegramBackup\Services\TelegramBackupService;
+use FieldTechVN\TelegramBackup\Testing\TestsTelegramBackup;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
@@ -15,10 +19,6 @@ use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use FieldTechVN\TelegramBackup\Commands\TelegramBackupCommand;
-use FieldTechVN\TelegramBackup\Services\TelegramBackupService;
-use FieldTechVN\TelegramBackup\Services\SendBackupFile;
-use FieldTechVN\TelegramBackup\Testing\TestsTelegramBackup;
 
 class TelegramBackupServiceProvider extends PackageServiceProvider
 {
@@ -128,8 +128,9 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
     protected function registerBackupEventListeners(): void
     {
         // Check if Spatie Laravel Backup package is installed
-        if (!class_exists(\Spatie\Backup\Events\BackupWasSuccessful::class)) {
+        if (! class_exists(\Spatie\Backup\Events\BackupWasSuccessful::class)) {
             Log::warning('Telegram Backup: Spatie Laravel Backup package is not installed. Backup-related features will not work.');
+
             return;
         }
 

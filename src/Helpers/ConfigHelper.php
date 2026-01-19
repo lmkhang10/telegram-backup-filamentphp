@@ -2,9 +2,8 @@
 
 namespace FieldTechVN\TelegramBackup\Helpers;
 
-use Illuminate\Support\Facades\Cache;
 use FieldTechVN\TelegramBackup\Models\TelegramBot;
-use FieldTechVN\TelegramBackup\Models\TelegramChat;
+use Illuminate\Support\Facades\Cache;
 
 class ConfigHelper
 {
@@ -30,7 +29,7 @@ class ConfigHelper
     {
         // During config loading, services might not be available
         // Return null and let the service handle database lookup when needed
-        if (!app()->bound('cache') || !app()->isBooted()) {
+        if (! app()->bound('cache') || ! app()->isBooted()) {
             return null;
         }
 
@@ -38,6 +37,7 @@ class ConfigHelper
             return Cache::remember(self::CACHE_KEY_BOT_TOKEN, self::CACHE_TTL, function () {
                 try {
                     $bot = TelegramBot::where('is_active', true)->first();
+
                     return $bot?->bot_token;
                 } catch (\Exception $e) {
                     // Database might not be ready yet
@@ -48,6 +48,7 @@ class ConfigHelper
             // If cache fails, try direct database query
             try {
                 $bot = TelegramBot::where('is_active', true)->first();
+
                 return $bot?->bot_token;
             } catch (\Exception $e) {
                 return null;
@@ -62,7 +63,7 @@ class ConfigHelper
     {
         // During config loading, services might not be available
         // Return null and let the service handle database lookup when needed
-        if (!app()->bound('cache') || !app()->isBooted()) {
+        if (! app()->bound('cache') || ! app()->isBooted()) {
             return null;
         }
 
@@ -70,13 +71,13 @@ class ConfigHelper
             return Cache::remember(self::CACHE_KEY_CHAT_ID, self::CACHE_TTL, function () {
                 try {
                     $bot = TelegramBot::where('is_active', true)->first();
-                    if (!$bot) {
+                    if (! $bot) {
                         return null;
                     }
-                    
+
                     // Get first active chat from many-to-many relationship
                     $chat = $bot->chats()->where('is_active', true)->first();
-                    
+
                     return $chat?->chat_id;
                 } catch (\Exception $e) {
                     // Database might not be ready yet
@@ -87,13 +88,13 @@ class ConfigHelper
             // If cache fails, try direct database query
             try {
                 $bot = TelegramBot::where('is_active', true)->first();
-                if (!$bot) {
+                if (! $bot) {
                     return null;
                 }
-                
+
                 // Get first active chat from many-to-many relationship
                 $chat = $bot->chats()->where('is_active', true)->first();
-                
+
                 return $chat?->chat_id;
             } catch (\Exception $e) {
                 return null;

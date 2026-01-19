@@ -2,19 +2,22 @@
 
 namespace FieldTechVN\TelegramBackup\Jobs;
 
+use FieldTechVN\TelegramBackup\Models\TelegramBot;
+use FieldTechVN\TelegramBackup\Services\TelegramService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use FieldTechVN\TelegramBackup\Models\TelegramBot;
-use FieldTechVN\TelegramBackup\Services\TelegramService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class StartSimpleLongPollingJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * The number of times the job may be attempted.
@@ -27,8 +30,11 @@ class StartSimpleLongPollingJob implements ShouldQueue
     public int $timeout = 600; // 10 minutes max
 
     public int $botId;
+
     public int $durationSeconds;
+
     public int $intervalMs;
+
     public int $timeoutSeconds;
 
     protected const CACHE_PREFIX = 'telegram_long_polling:';
@@ -51,11 +57,12 @@ class StartSimpleLongPollingJob implements ShouldQueue
     {
         $bot = TelegramBot::find($this->botId);
 
-        if (!$bot || !$bot->is_active) {
-            Log::info("StartSimpleLongPollingJob: Bot not found or inactive", [
+        if (! $bot || ! $bot->is_active) {
+            Log::info('StartSimpleLongPollingJob: Bot not found or inactive', [
                 'bot_id' => $this->botId,
             ]);
             $this->clearCache();
+
             return;
         }
 
@@ -81,7 +88,7 @@ class StartSimpleLongPollingJob implements ShouldQueue
             $this->clearCache();
         }
 
-        Log::info("StartSimpleLongPollingJob: Long polling session finished", [
+        Log::info('StartSimpleLongPollingJob: Long polling session finished', [
             'bot_id' => $bot->id,
             'bot_username' => $bot->bot_username,
         ]);

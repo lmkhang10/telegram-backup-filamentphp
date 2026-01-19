@@ -4,9 +4,9 @@ namespace FieldTechVN\TelegramBackup\Filament\Resources\TelegramBotResource\Page
 
 use FieldTechVN\TelegramBackup\Filament\Resources\TelegramBotResource;
 use FieldTechVN\TelegramBackup\Services\TelegramService;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
 
 class CreateTelegramBot extends CreateRecord
@@ -24,23 +24,24 @@ class CreateTelegramBot extends CreateRecord
                 ->color('success')
                 ->action(function () {
                     $data = $this->form->getState();
-                    
+
                     if (empty($data['bot_token'])) {
                         Notification::make()
                             ->title('Bot Token is required')
                             ->body('Please enter a bot token before testing connection.')
                             ->danger()
                             ->send();
+
                         return;
                     }
 
                     // Create temporary bot instance for testing
-                    $tempBot = new \FieldTechVN\TelegramBackup\Models\TelegramBot();
+                    $tempBot = new \FieldTechVN\TelegramBackup\Models\TelegramBot;
                     $tempBot->bot_token = $data['bot_token'];
-                    
+
                     $service = app(TelegramService::class);
                     $result = $service->testConnection($tempBot, false);
-                    
+
                     if ($result['success']) {
                         // Update form fields with bot info
                         $formData = array_merge($data, [
@@ -50,7 +51,7 @@ class CreateTelegramBot extends CreateRecord
                         ]);
 
                         // Add fetched chats to form
-                        if (!empty($result['chats'])) {
+                        if (! empty($result['chats'])) {
                             $formData['fetched_chats'] = array_map(function ($chat) {
                                 return [
                                     'chat_id' => $chat['chat_id'],
@@ -91,13 +92,13 @@ class CreateTelegramBot extends CreateRecord
         }
 
         // Create temporary bot instance for testing
-        $tempBot = new \FieldTechVN\TelegramBackup\Models\TelegramBot();
+        $tempBot = new \FieldTechVN\TelegramBackup\Models\TelegramBot;
         $tempBot->bot_token = $data['bot_token'];
-        
+
         $service = app(TelegramService::class);
         $result = $service->testConnection($tempBot, false);
-        
-        if (!$result['success']) {
+
+        if (! $result['success']) {
             throw ValidationException::withMessages([
                 'bot_token' => 'Failed to connect to Telegram API. Please verify your bot token is correct.',
             ]);
@@ -116,14 +117,14 @@ class CreateTelegramBot extends CreateRecord
     protected function afterCreate(): void
     {
         // Attach fetched chats to the created bot
-        if (!empty($this->fetchedChats)) {
+        if (! empty($this->fetchedChats)) {
             $record = $this->record;
-            
+
             foreach ($this->fetchedChats as $chatData) {
                 // Check if chat already exists
                 $chat = \FieldTechVN\TelegramBackup\Models\TelegramChat::where('chat_id', $chatData['chat_id'])->first();
-                
-                if (!$chat) {
+
+                if (! $chat) {
                     // Create new chat
                     $chat = \FieldTechVN\TelegramBackup\Models\TelegramChat::create($chatData);
                 } else {
@@ -132,7 +133,7 @@ class CreateTelegramBot extends CreateRecord
                 }
 
                 // Attach to bot if not already attached
-                if (!$record->chats()->where('telegram_chats.id', $chat->id)->exists()) {
+                if (! $record->chats()->where('telegram_chats.id', $chat->id)->exists()) {
                     $record->chats()->attach($chat->id);
                 }
             }

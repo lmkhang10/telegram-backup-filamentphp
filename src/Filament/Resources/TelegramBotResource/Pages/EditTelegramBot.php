@@ -4,9 +4,9 @@ namespace FieldTechVN\TelegramBackup\Filament\Resources\TelegramBotResource\Page
 
 use FieldTechVN\TelegramBackup\Filament\Resources\TelegramBotResource;
 use FieldTechVN\TelegramBackup\Services\TelegramService;
-use Filament\Resources\Pages\EditRecord;
-use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 
 class EditTelegramBot extends EditRecord
 {
@@ -22,7 +22,7 @@ class EditTelegramBot extends EditRecord
                 ->action(function () {
                     $service = app(TelegramService::class);
                     $result = $service->testConnection($this->record, false);
-                    
+
                     if ($result['success']) {
                         // Refresh the form to show updated chats
                         $this->form->fill(array_merge($this->form->getState(), [
@@ -31,13 +31,13 @@ class EditTelegramBot extends EditRecord
                         ]));
 
                         $message = 'Connection successful!';
-                        
+
                         Notification::make()
                             ->title('Connection successful!')
                             ->body($message)
                             ->success()
                             ->send();
-                            
+
                         // Refresh the record to show updated chats
                         $this->record->refresh();
                     } else {

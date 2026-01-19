@@ -75,7 +75,7 @@ return [
         'enabled' => env('TELEGRAM_BACKUP_ENABLED', false),
         'notify_on_success' => true,
         'notify_on_failure' => true,
-        
+
         // Original package config (for backward compatibility)
         // Database has highest priority, falls back to env variables if no bot in database
         'token' => \FieldTechVN\TelegramBackup\Helpers\ConfigHelper::getDefaultBotToken() ?: env('BACKUP_TELEGRAM_BOT_TOKEN'),

@@ -3,17 +3,17 @@
 namespace FieldTechVN\TelegramBackup\Filament\Resources;
 
 use FieldTechVN\TelegramBackup\Filament\Resources\TelegramBotResource\Pages;
-use FieldTechVN\TelegramBackup\Models\TelegramBot;
 use FieldTechVN\TelegramBackup\Jobs\StartSimpleLongPollingJob;
+use FieldTechVN\TelegramBackup\Models\TelegramBot;
+use FieldTechVN\TelegramBackup\Services\TelegramService;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
-use FieldTechVN\TelegramBackup\Services\TelegramService;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
 
 class TelegramBotResource extends Resource
@@ -111,6 +111,7 @@ class TelegramBotResource extends Resource
                                         ];
                                     })->toArray();
                                 }
+
                                 return [];
                             })
                             ->dehydrated(false)
@@ -189,10 +190,10 @@ class TelegramBotResource extends Resource
                     ->action(function (TelegramBot $record) {
                         $service = app(TelegramService::class);
                         $result = $service->testConnection($record, false);
-                        
+
                         if ($result['success']) {
                             $message = 'Connection successful!';
-                            
+
                             Notification::make()
                                 ->title('Connection successful!')
                                 ->body($message)
@@ -214,7 +215,7 @@ class TelegramBotResource extends Resource
                     ->icon('heroicon-o-play')
                     ->color('info')
                     ->visible(function (TelegramBot $record) {
-                        return !Cache::has('telegram_long_polling:' . $record->id);
+                        return ! Cache::has('telegram_long_polling:' . $record->id);
                     })
                     ->requiresConfirmation()
                     ->modalHeading('Start Long Polling')

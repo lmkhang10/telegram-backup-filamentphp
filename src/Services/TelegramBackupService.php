@@ -3,12 +3,11 @@
 namespace FieldTechVN\TelegramBackup\Services;
 
 use FieldTechVN\TelegramBackup\Models\TelegramBot;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TelegramBackupService
 {
-
     /**
      * Check if Spatie Laravel Backup is installed
      */
@@ -22,12 +21,13 @@ class TelegramBackupService
      */
     public function notifyBackupSuccess($event): void
     {
-        if (!$this->isSpatieBackupInstalled()) {
+        if (! $this->isSpatieBackupInstalled()) {
             Log::warning('Telegram Backup Service: Spatie Laravel Backup package is not installed.');
+
             return;
         }
 
-        if (!config('telegram-backup-filamentphp.backup.notify_on_success', true)) {
+        if (! config('telegram-backup-filamentphp.backup.notify_on_success', true)) {
             return;
         }
 
@@ -42,12 +42,13 @@ class TelegramBackupService
      */
     public function notifyBackupFailed($event): void
     {
-        if (!$this->isSpatieBackupInstalled()) {
+        if (! $this->isSpatieBackupInstalled()) {
             Log::warning('Telegram Backup Service: Spatie Laravel Backup package is not installed.');
+
             return;
         }
 
-        if (!config('telegram-backup-filamentphp.backup.notify_on_failure', true)) {
+        if (! config('telegram-backup-filamentphp.backup.notify_on_failure', true)) {
             return;
         }
 
@@ -62,13 +63,13 @@ class TelegramBackupService
      */
     public function notifyCleanupSuccess($event): void
     {
-        if (!$this->isSpatieBackupInstalled()) {
+        if (! $this->isSpatieBackupInstalled()) {
             return;
         }
 
         $this->sendNotification(
             '🧹 Cleanup completed successfully!',
-            "Backup cleanup has been completed successfully."
+            'Backup cleanup has been completed successfully.'
         );
     }
 
@@ -77,17 +78,17 @@ class TelegramBackupService
      */
     public function notifyCleanupFailed($event): void
     {
-        if (!$this->isSpatieBackupInstalled()) {
+        if (! $this->isSpatieBackupInstalled()) {
             return;
         }
 
-        $errorMessage = property_exists($event, 'exception') 
-            ? $event->exception->getMessage() 
+        $errorMessage = property_exists($event, 'exception')
+            ? $event->exception->getMessage()
             : 'Unknown error';
 
         $this->sendNotification(
             '❌ Cleanup failed!',
-            "Backup cleanup has failed: " . $errorMessage
+            'Backup cleanup has failed: ' . $errorMessage
         );
     }
 
@@ -96,7 +97,7 @@ class TelegramBackupService
      */
     public function notifyHealthyBackup($event): void
     {
-        if (!$this->isSpatieBackupInstalled()) {
+        if (! $this->isSpatieBackupInstalled()) {
             return;
         }
 
@@ -106,10 +107,10 @@ class TelegramBackupService
         } catch (\Exception $e) {
             $backupName = 'Unknown';
         }
-        
+
         $this->sendNotification(
             '✅ Healthy backup found!',
-            "A healthy backup was found for: " . $backupName
+            'A healthy backup was found for: ' . $backupName
         );
     }
 
@@ -118,7 +119,7 @@ class TelegramBackupService
      */
     public function notifyUnhealthyBackup($event): void
     {
-        if (!$this->isSpatieBackupInstalled()) {
+        if (! $this->isSpatieBackupInstalled()) {
             return;
         }
 
@@ -128,10 +129,10 @@ class TelegramBackupService
         } catch (\Exception $e) {
             $backupName = 'Unknown';
         }
-        
+
         $this->sendNotification(
             '⚠️ Unhealthy backup found!',
-            "An unhealthy backup was found for: " . $backupName
+            'An unhealthy backup was found for: ' . $backupName
         );
     }
 
@@ -150,9 +151,10 @@ class TelegramBackupService
                 if ($chats->isEmpty()) {
                     // Fallback to config chat_id if no chats configured
                     $chatId = config('telegram-backup-filamentphp.backup.chat_id') ?? env('BACKUP_TELEGRAM_CHAT_ID');
-                    
+
                     if (empty($chatId)) {
                         Log::warning("No active chats configured for bot {$bot->bot_username} and no chat ID in config.");
+
                         continue;
                     }
 
@@ -164,14 +166,14 @@ class TelegramBackupService
                             'parse_mode' => 'HTML',
                         ]);
 
-                    if (!$response->successful()) {
+                    if (! $response->successful()) {
                         Log::error('Failed to send Telegram backup notification: ' . $response->body());
                     }
                 } else {
                     // Send to all active chats for the bot
                     foreach ($chats as $chat) {
                         $fullMessage = "<b>{$title}</b>\n\n{$message}";
-                        
+
                         $response = Http::timeout(config('telegram-backup-filamentphp.api.timeout', 30))
                             ->post("https://api.telegram.org/bot{$bot->bot_token}/sendMessage", [
                                 'chat_id' => $chat->chat_id,
@@ -179,7 +181,7 @@ class TelegramBackupService
                                 'parse_mode' => 'HTML',
                             ]);
 
-                        if (!$response->successful()) {
+                        if (! $response->successful()) {
                             Log::error('Failed to send Telegram backup notification: ' . $response->body());
                         }
                     }
@@ -196,16 +198,16 @@ class TelegramBackupService
     protected function formatBackupDetails($event): string
     {
         $details = "Backup completed successfully!\n";
-        
+
         if (property_exists($event, 'backupDestination')) {
             $backupDestination = $event->backupDestination;
-            $details .= "Backup Name: " . $backupDestination->backupName() . "\n";
-            $details .= "Disk: " . $backupDestination->diskName() . "\n";
-            
+            $details .= 'Backup Name: ' . $backupDestination->backupName() . "\n";
+            $details .= 'Disk: ' . $backupDestination->diskName() . "\n";
+
             $newestBackup = $backupDestination->newestBackup();
             if ($newestBackup && $newestBackup->exists()) {
-                $details .= "Path: " . $newestBackup->path() . "\n";
-                $details .= "Size: " . $this->formatBytes($newestBackup->sizeInBytes()) . "\n";
+                $details .= 'Path: ' . $newestBackup->path() . "\n";
+                $details .= 'Size: ' . $this->formatBytes($newestBackup->sizeInBytes()) . "\n";
             }
         }
 
@@ -218,13 +220,13 @@ class TelegramBackupService
     protected function formatBackupError($event): string
     {
         $error = "Backup failed!\n";
-        
+
         if (property_exists($event, 'backupDestination')) {
-            $error .= "Backup Name: " . $event->backupDestination->backupName() . "\n";
+            $error .= 'Backup Name: ' . $event->backupDestination->backupName() . "\n";
         }
-        
+
         if (property_exists($event, 'exception')) {
-            $error .= "Error: " . $event->exception->getMessage() . "\n";
+            $error .= 'Error: ' . $event->exception->getMessage() . "\n";
         }
 
         return $error;

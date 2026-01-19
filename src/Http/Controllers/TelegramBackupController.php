@@ -20,9 +20,7 @@ class TelegramBackupController extends Controller
     /**
      * Download backup file from Telegram
      *
-     * @param DownloadTelegramBackupRequest $request
-     * @param int $id
-     * @return StreamedResponse
+     * @param  int  $id
      */
     public function download(DownloadTelegramBackupRequest $request, $id): StreamedResponse
     {

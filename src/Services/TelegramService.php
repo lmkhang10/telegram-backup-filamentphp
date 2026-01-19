@@ -2,10 +2,10 @@
 
 namespace FieldTechVN\TelegramBackup\Services;
 
+use Exception;
 use FieldTechVN\TelegramBackup\Models\TelegramBot;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class TelegramService
 {
@@ -32,6 +32,7 @@ class TelegramService
             return null;
         } catch (Exception $e) {
             Log::error('Failed to get bot info: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -50,20 +51,20 @@ class TelegramService
         ];
 
         $botInfo = $this->getBotInfo($bot->bot_token);
-        
+
         if ($botInfo) {
             $bot->update([
                 'bot_username' => $botInfo['username'] ?? null,
                 'bot_name' => $botInfo['first_name'] ?? null,
             ]);
-            
+
             $result['success'] = true;
             $result['bot_info'] = $botInfo;
 
             // Fetch chats if requested
             if ($fetchChats) {
                 $chats = $this->fetchChatsFromUpdates($bot);
-                
+
                 // If no chats found from updates, try to get chat from config as fallback
                 if (empty($chats)) {
                     $configChatId = config('telegram-backup-filamentphp.backup.chat_id') ?? env('BACKUP_TELEGRAM_CHAT_ID');
@@ -72,7 +73,7 @@ class TelegramService
                             $chatInfo = $this->getChatInfo($bot->bot_token, $configChatId);
                             if ($chatInfo) {
                                 $chats[] = [
-                                    'chat_id' => (string)$chatInfo['id'],
+                                    'chat_id' => (string) $chatInfo['id'],
                                     'chat_type' => $chatInfo['type'] ?? 'private',
                                     'name' => $chatInfo['title'] ?? $chatInfo['first_name'] ?? null,
                                     'username' => $chatInfo['username'] ?? null,
@@ -88,7 +89,7 @@ class TelegramService
                         }
                     }
                 }
-                
+
                 $result['chats'] = $chats;
 
                 // Only create/update chats and attach if bot is saved (has an ID)
@@ -96,8 +97,8 @@ class TelegramService
                     foreach ($chats as $chatData) {
                         // Check if chat already exists
                         $chat = \FieldTechVN\TelegramBackup\Models\TelegramChat::where('chat_id', $chatData['chat_id'])->first();
-                        
-                        if (!$chat) {
+
+                        if (! $chat) {
                             // Create new chat
                             $chat = \FieldTechVN\TelegramBackup\Models\TelegramChat::create($chatData);
                             $result['created']++;
@@ -107,7 +108,7 @@ class TelegramService
                         }
 
                         // Attach to bot if not already attached
-                        if (!$bot->chats()->where('telegram_chats.id', $chat->id)->exists()) {
+                        if (! $bot->chats()->where('telegram_chats.id', $chat->id)->exists()) {
                             $bot->chats()->attach($chat->id);
                             $result['attached']++;
                         }
@@ -116,7 +117,7 @@ class TelegramService
                     // Bot is not saved yet, just count chats that would be created/attached
                     foreach ($chats as $chatData) {
                         $existingChat = \FieldTechVN\TelegramBackup\Models\TelegramChat::where('chat_id', $chatData['chat_id'])->first();
-                        if (!$existingChat) {
+                        if (! $existingChat) {
                             $result['created']++;
                         }
                         $result['attached']++;
@@ -146,6 +147,7 @@ class TelegramService
             return null;
         } catch (Exception $e) {
             Log::error('Failed to get chat info: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -175,22 +177,24 @@ class TelegramService
 
             if ($response->successful()) {
                 $result = $response->json();
-                
+
                 // Log for debugging
                 if (isset($result['result']) && is_array($result['result'])) {
                     Log::info('getUpdates returned ' . count($result['result']) . ' updates');
                 } else {
                     Log::warning('getUpdates returned unexpected format: ' . json_encode($result));
                 }
-                
+
                 return $result['result'] ?? null;
             }
 
             $error = $response->json();
             Log::error('getUpdates failed: ' . json_encode($error));
+
             return null;
         } catch (Exception $e) {
             Log::error('Failed to get updates: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -203,8 +207,9 @@ class TelegramService
         $chats = [];
         $updates = $this->getUpdates($bot->bot_token, 0, 100);
 
-        if (!$updates || !is_array($updates)) {
+        if (! $updates || ! is_array($updates)) {
             Log::warning("No updates returned for bot {$bot->id}. Updates: " . json_encode($updates));
+
             return $chats;
         }
 
@@ -212,7 +217,7 @@ class TelegramService
 
         foreach ($updates as $update) {
             $chat = null;
-            
+
             // Extract chat from different update types
             if (isset($update['message']['chat'])) {
                 $chat = $update['message']['chat'];
@@ -234,22 +239,22 @@ class TelegramService
             }
 
             if ($chat && isset($chat['id'])) {
-                $chatId = (string)$chat['id'];
-                
+                $chatId = (string) $chat['id'];
+
                 // Skip if already processed
                 if (in_array($chatId, $discoveredChatIds)) {
                     continue;
                 }
-                
+
                 $discoveredChatIds[] = $chatId;
-                
+
                 try {
                     // Get full chat info
                     $chatInfo = $this->getChatInfo($bot->bot_token, $chatId);
-                    
+
                     if ($chatInfo) {
                         $chats[] = [
-                            'chat_id' => (string)$chatInfo['id'],
+                            'chat_id' => (string) $chatInfo['id'],
                             'chat_type' => $chatInfo['type'] ?? 'private',
                             'name' => $chatInfo['title'] ?? $chatInfo['first_name'] ?? null,
                             'username' => $chatInfo['username'] ?? null,
@@ -274,12 +279,14 @@ class TelegramService
                     }
                 } catch (\Exception $e) {
                     Log::error("Error processing chat {$chatId}: " . $e->getMessage());
+
                     continue;
                 }
             }
         }
 
-        Log::info("Fetched " . count($chats) . " chats from updates for bot {$bot->id}");
+        Log::info('Fetched ' . count($chats) . " chats from updates for bot {$bot->id}");
+
         return $chats;
     }
 
@@ -300,9 +307,11 @@ class TelegramService
             }
 
             Log::warning('sendMessage failed: ' . json_encode($response->json()));
+
             return null;
         } catch (Exception $e) {
             Log::error('Failed to send message: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -319,18 +328,20 @@ class TelegramService
 
         while (microtime(true) < $endTime) {
             // Check if polling was stopped via cache
-            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
-                Log::info("Telegram long polling: Stopped by cache check", [
+            if (! \Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                Log::info('Telegram long polling: Stopped by cache check', [
                     'bot_id' => $bot->id,
                     'bot_username' => $bot->bot_username,
                 ]);
+
                 break;
             }
             $updates = $this->getUpdates($bot->bot_token, $offset, 100, $timeout);
 
-            if (!is_array($updates) || empty($updates)) {
+            if (! is_array($updates) || empty($updates)) {
                 // No updates, wait for next interval
                 usleep($intervalMs * 1000);
+
                 continue;
             }
 
@@ -352,7 +363,7 @@ class TelegramService
                     $message = $update['edited_channel_post'];
                 }
 
-                if (!$message || empty($message['text'] ?? null) || empty($message['chat']['id'] ?? null)) {
+                if (! $message || empty($message['text'] ?? null) || empty($message['chat']['id'] ?? null)) {
                     continue;
                 }
 
@@ -367,7 +378,7 @@ class TelegramService
                         $chatInfo = $this->getChatInfo($bot->bot_token, $chatId);
                         if ($chatInfo) {
                             $chats[] = [
-                                'chat_id' => (string)$chatInfo['id'],
+                                'chat_id' => (string) $chatInfo['id'],
                                 'chat_type' => $chatInfo['type'] ?? 'private',
                                 'name' => $chatInfo['title'] ?? $chatInfo['first_name'] ?? null,
                                 'username' => $chatInfo['username'] ?? null,
@@ -376,9 +387,9 @@ class TelegramService
                                 'description' => $chatInfo['description'] ?? null,
                                 'is_active' => true,
                             ];
-                        } 
-                        
-                        if (!empty($chats)) {
+                        }
+
+                        if (! empty($chats)) {
                             $created = 0;
                             $attached = 0;
                             $updated = 0;
@@ -387,7 +398,7 @@ class TelegramService
                                 // Check if chat already exists
                                 $chat = \FieldTechVN\TelegramBackup\Models\TelegramChat::where('chat_id', $chatData['chat_id'])->first();
 
-                                if (!$chat) {
+                                if (! $chat) {
                                     // Create new chat
                                     $chat = \FieldTechVN\TelegramBackup\Models\TelegramChat::create($chatData);
                                     $created++;
@@ -398,7 +409,7 @@ class TelegramService
                                 }
 
                                 // Attach to bot if not already attached
-                                if (!$bot->chats()->where('telegram_chats.id', $chat->id)->exists()) {
+                                if (! $bot->chats()->where('telegram_chats.id', $chat->id)->exists()) {
                                     $bot->chats()->attach($chat->id);
                                     $attached++;
                                 }
@@ -406,7 +417,7 @@ class TelegramService
 
                             $messageText = "Setup complete! Found {$created} new chats, updated {$updated} chats and attached {$attached} chats to this bot.";
                             $this->sendMessage($bot->bot_token, $chatId, $messageText);
-                          
+
                         } else {
                             $this->sendMessage($bot->bot_token, $chatId, 'No chats found in recent updates. Make sure the bot has received messages or is added to groups/channels.');
                             Log::warning('Telegram long polling: /setup found no chats', [
@@ -456,7 +467,7 @@ class TelegramService
                 ]);
 
             $responseData = $response->json();
-            
+
             if ($response->successful() && ($responseData['ok'] ?? false)) {
                 $result['success'] = true;
                 Log::info("Successfully deleted message {$messageId} from chat {$chatId}");
