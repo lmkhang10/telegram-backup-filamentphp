@@ -17,4 +17,4 @@ parameters:
         - '#Access to an undefined property .*::\$form#'
         - '#Access to an undefined property .*::\$record#'
         - '#Access to an undefined property FieldTechVN\\\\TelegramBackup\\\\Models\\\\.*::\$.*#'
-        - '#Offset \'error\' on array.*always exists and is not nullable#'
+        - '#Offset error on array.*always exists and is not nullable#'
