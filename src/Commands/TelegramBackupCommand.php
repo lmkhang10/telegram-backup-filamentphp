@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace FieldTechVN\TelegramBackup\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class TelegramBackupCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'telegram-backup-filamentphp';
 
     public $description = 'My command';
 
