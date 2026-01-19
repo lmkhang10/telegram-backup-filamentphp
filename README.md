@@ -9,6 +9,13 @@
 
 A Laravel package that integrates Telegram backup functionality with FilamentPHP 3+. This package provides Filament resources for managing Telegram bots, chats, and backups, allowing you to automatically send Laravel backups to Telegram.
 
+## Demo
+
+| | |
+|---|---|
+| ![Telegram Backup - 1](guide/telegram-backup-filamentphp-1.gif) | ![Telegram Backup - 2](guide/telegram-backup-filamentphp-2.gif) |
+| ![Telegram Backup - 3](guide/telegram-backup-filamentphp-3.gif) | ![Telegram Backup - 4](guide/telegram-backup-filamentphp-4.gif) |
+
 ## Installation
 
 You can install the package via composer:
