@@ -9,12 +9,11 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Storage;
+use Filament\Tables\Table;
 
 class TelegramBackupResource extends Resource
 {
@@ -119,8 +118,10 @@ class TelegramBackupResource extends Resource
                         }
                         if (is_array($state)) {
                             $count = count($state);
+
                             return $count > 1 ? $count . ' messages' : ($state[0] ?? 'N/A');
                         }
+
                         return $state ?? 'N/A';
                     })
                     ->sortable()
@@ -167,43 +168,43 @@ class TelegramBackupResource extends Resource
                         return route('telegram-backup.download', $record->id);
                     })
                     ->openUrlInNewTab()
-                    ->visible(fn (TelegramBackup $record) => $record->status === 'sent' && !empty($record->telegram_file_id)),
+                    ->visible(fn (TelegramBackup $record) => $record->status === 'sent' && ! empty($record->telegram_file_id)),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->before(function (TelegramBackup $record) {
                         // Delete message(s) from Telegram before deleting the record
                         if ($record->bot && $record->telegram_chat_id && $record->telegram_message_id) {
                             $telegramService = app(TelegramService::class);
-                            $messageIds = is_array($record->telegram_message_id) 
-                                ? $record->telegram_message_id 
+                            $messageIds = is_array($record->telegram_message_id)
+                                ? $record->telegram_message_id
                                 : [$record->telegram_message_id];
-                            
+
                             $deletedCount = 0;
                             $failedCount = 0;
-                            
+
                             foreach ($messageIds as $messageId) {
                                 $result = $telegramService->deleteMessage(
                                     $record->bot->bot_token,
                                     $record->telegram_chat_id,
                                     $messageId
                                 );
-                                
+
                                 if ($result['success'] ?? false) {
                                     $deletedCount++;
                                 } else {
                                     $failedCount++;
                                 }
                             }
-                            
+
                             if ($deletedCount > 0) {
-                                $message = $deletedCount === 1 
+                                $message = $deletedCount === 1
                                     ? 'Message deleted from Telegram'
                                     : "{$deletedCount} messages deleted from Telegram";
-                                
+
                                 if ($failedCount > 0) {
                                     $message .= " ({$failedCount} failed)";
                                 }
-                                
+
                                 Notification::make()
                                     ->title($message)
                                     ->success()
@@ -219,13 +220,13 @@ class TelegramBackupResource extends Resource
                         ->before(function ($records) {
                             // Delete messages from Telegram before deleting records
                             $telegramService = app(TelegramService::class);
-                            
+
                             foreach ($records as $record) {
                                 if ($record->bot && $record->telegram_chat_id && $record->telegram_message_id) {
-                                    $messageIds = is_array($record->telegram_message_id) 
-                                        ? $record->telegram_message_id 
+                                    $messageIds = is_array($record->telegram_message_id)
+                                        ? $record->telegram_message_id
                                         : [$record->telegram_message_id];
-                                    
+
                                     foreach ($messageIds as $messageId) {
                                         $telegramService->deleteMessage(
                                             $record->bot->bot_token,
@@ -293,10 +294,13 @@ class TelegramBackupResource extends Resource
                                         if ($count > 5) {
                                             $display .= "\n...";
                                         }
+
                                         return $display;
                                     }
+
                                     return $state[0] ?? 'N/A';
                                 }
+
                                 return $state ?? 'N/A';
                             })
                             ->default('N/A')
@@ -315,10 +319,13 @@ class TelegramBackupResource extends Resource
                                         if ($count > 5) {
                                             $display .= "\n...";
                                         }
+
                                         return $display;
                                     }
+
                                     return $state[0] ?? 'N/A';
                                 }
+
                                 return $state ?? 'N/A';
                             })
                             ->default('N/A')

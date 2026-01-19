@@ -3,8 +3,8 @@
 namespace FieldTechVN\TelegramBackup\Filament\Resources\TelegramChatResource\Pages;
 
 use FieldTechVN\TelegramBackup\Filament\Resources\TelegramChatResource;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewTelegramChat extends ViewRecord
 {

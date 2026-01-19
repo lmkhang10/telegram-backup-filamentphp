@@ -3,18 +3,18 @@
 namespace FieldTechVN\TelegramBackup\Filament\Resources;
 
 use FieldTechVN\TelegramBackup\Filament\Resources\TelegramChatResource\Pages;
-use FieldTechVN\TelegramBackup\Models\TelegramChat;
 use FieldTechVN\TelegramBackup\Models\TelegramBot;
+use FieldTechVN\TelegramBackup\Models\TelegramChat;
 use FieldTechVN\TelegramBackup\Services\TelegramService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
 class TelegramChatResource extends Resource
@@ -112,7 +112,7 @@ class TelegramChatResource extends Resource
 
         try {
             $bot = TelegramBot::find($botId);
-            if (!$bot) {
+            if (! $bot) {
                 return;
             }
 
@@ -261,7 +261,7 @@ class TelegramChatResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
-                    ->visible(fn ($record) => $record->chat_type === 'private' || !empty($record->first_name) || !empty($record->last_name) || !empty($record->description)),
+                    ->visible(fn ($record) => $record->chat_type === 'private' || ! empty($record->first_name) || ! empty($record->last_name) || ! empty($record->description)),
                 Infolists\Components\Section::make('Associated Bots')
                     ->schema([
                         Infolists\Components\TextEntry::make('bots.bot_username')

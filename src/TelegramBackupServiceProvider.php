@@ -71,7 +71,7 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
     {
         // Asset Registration
         $assets = $this->getAssets();
-        if (!empty($assets)) {
+        if (! empty($assets)) {
             FilamentAsset::register(
                 $assets,
                 $this->getAssetPackageName()
@@ -226,21 +226,21 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
     {
         $basePath = dirname(__DIR__);
         $assets = [];
-        
+
         // Only register assets if they exist
         $cssPath = $basePath . '/resources/dist/telegram-backup-filamentphp.css';
         $jsPath = $basePath . '/resources/dist/telegram-backup-filamentphp.js';
-        
+
         if (file_exists($cssPath)) {
             $assets[] = Css::make('telegram-backup-filamentphp-styles', $cssPath);
         }
-        
+
         if (file_exists($jsPath)) {
             $assets[] = Js::make('telegram-backup-filamentphp-scripts', $jsPath);
         }
-        
+
         // AlpineComponent::make('telegram-backup-filamentphp', $basePath . '/resources/dist/components/telegram-backup-filamentphp.js'),
-        
+
         return $assets;
     }
 
