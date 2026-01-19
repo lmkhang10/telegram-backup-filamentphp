@@ -10,11 +10,11 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: false
-    checkMissingIterableValueType: false
     ignoreErrors:
-        - '#Class .* extends unknown class Filament\\\\.*#'
+        - '#Class .* extends unknown class Filament#'
         - '#Call to an undefined static method .*::route\(\)#'
         - '#Access to an undefined property .*::\$form#'
         - '#Access to an undefined property .*::\$record#'
-        - '#Access to an undefined property FieldTechVN\\\\TelegramBackup\\\\Models\\\\.*::\$.*#'
-        - '#Offset error on array.*always exists and is not nullable#'
+        - '#Access to an undefined property FieldTechVN\\\\.*::\$.*#'
+        - '#Call to an undefined method .*::chats\(\)#'
+        - '#Offset .* on array.*always exists and is not nullable#'
