@@ -30,11 +30,34 @@ You can publish the config file with:
 php artisan vendor:publish --tag="telegram-backup-filamentphp-config"
 ```
 
-Optionally, you can publish the views using
+Optionally, you can publish the views using:
 
 ```bash
 php artisan vendor:publish --tag="telegram-backup-filamentphp-views"
 ```
+
+### Environment Variables
+
+Add the following environment variables to your `.env` file:
+
+```env
+# Enable/disable automatic backup notifications to Telegram
+TELEGRAM_BACKUP_ENABLED=true
+
+# Telegram Bot Token (optional - can be set via Filament admin panel)
+# Falls back to database if not set here
+BACKUP_TELEGRAM_BOT_TOKEN=your_bot_token_here
+
+# Telegram Chat ID (optional - can be set via Filament admin panel)
+# Falls back to database if not set here
+BACKUP_TELEGRAM_CHAT_ID=your_chat_id_here
+
+# Chunk size for splitting large backup files (in MB, max 49)
+# Default: 1 MB
+BACKUP_TELEGRAM_CHUNK_SIZE=1
+```
+
+**Note:** The package prioritizes bot tokens and chat IDs from the database (configured via Filament admin panel) over environment variables. Environment variables are used as fallbacks if no active bot/chat is found in the database.
 
 ## Usage
 
