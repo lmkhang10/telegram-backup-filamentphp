@@ -85,10 +85,13 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
 
         // Handle Stubs
         if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__ . '/stubs/') as $file) {
-                $this->publishes([
-                    $file->getRealPath() => base_path("stubs/telegram-backup-filamentphp/{$file->getFilename()}"),
-                ], 'telegram-backup-filamentphp-stubs');
+            $stubsPath = __DIR__ . '/../stubs/';
+            if (is_dir($stubsPath) && app(Filesystem::class)->exists($stubsPath)) {
+                foreach (app(Filesystem::class)->files($stubsPath) as $file) {
+                    $this->publishes([
+                        $file->getRealPath() => base_path("stubs/telegram-backup-filamentphp/{$file->getFilename()}"),
+                    ], 'telegram-backup-filamentphp-stubs');
+                }
             }
         }
 
