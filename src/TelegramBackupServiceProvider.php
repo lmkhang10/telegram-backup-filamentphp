@@ -87,20 +87,21 @@ class TelegramBackupServiceProvider extends PackageServiceProvider
         if (app()->runningInConsole()) {
             $stubsPath = dirname(__DIR__) . '/stubs/';
             $filesystem = app(Filesystem::class);
-            
+
             if (is_dir($stubsPath) && $filesystem->exists($stubsPath)) {
                 try {
                     $files = $filesystem->files($stubsPath);
-                    
+
                     // Only publish if there are actual stub files (not just .gitkeep)
                     $stubFiles = array_filter($files, function ($file) {
                         $filename = $file->getFilename();
-                        return $filename !== '.gitkeep' && 
-                               ($file->getExtension() === 'php' || 
+
+                        return $filename !== '.gitkeep' &&
+                               ($file->getExtension() === 'php' ||
                                 strpos($filename, '.stub') !== false);
                     });
-                    
-                    if (!empty($stubFiles)) {
+
+                    if (! empty($stubFiles)) {
                         foreach ($stubFiles as $file) {
                             $this->publishes([
                                 $file->getRealPath() => base_path("stubs/telegram-backup-filamentphp/{$file->getFilename()}"),
