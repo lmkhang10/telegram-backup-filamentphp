@@ -58,13 +58,13 @@ class TelegramBackupResource extends Resource
                     ->label('Telegram File ID(s)')
                     ->disabled()
                     ->dehydrated(true)
-                    ->formatStateUsing(fn ($state) => is_array($state) ? implode("\n", $state) : ($state ?? 'N/A'))
+                    ->formatStateUsing(fn ($state) => is_array($state) ? implode("\n", $state) : (empty($state) ? 'N/A' : $state))
                     ->rows(3),
                 Forms\Components\Textarea::make('telegram_message_id')
                     ->label('Telegram Message ID(s)')
                     ->disabled()
                     ->dehydrated(true)
-                    ->formatStateUsing(fn ($state) => is_array($state) ? implode("\n", $state) : ($state ?? 'N/A'))
+                    ->formatStateUsing(fn ($state) => is_array($state) ? implode("\n", $state) : (empty($state) ? 'N/A' : $state))
                     ->rows(3),
                 Forms\Components\TextInput::make('telegram_chat_id')
                     ->label('Chat ID')
@@ -122,7 +122,7 @@ class TelegramBackupResource extends Resource
                             return $count > 1 ? $count . ' messages' : ($state[0] ?? 'N/A');
                         }
 
-                        return $state ?? 'N/A';
+                        return $state;
                     })
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -301,7 +301,7 @@ class TelegramBackupResource extends Resource
                                     return $state[0] ?? 'N/A';
                                 }
 
-                                return $state ?? 'N/A';
+                                return $state;
                             })
                             ->default('N/A')
                             ->copyable()
@@ -326,7 +326,7 @@ class TelegramBackupResource extends Resource
                                     return $state[0] ?? 'N/A';
                                 }
 
-                                return $state ?? 'N/A';
+                                return $state;
                             })
                             ->default('N/A')
                             ->copyable()
